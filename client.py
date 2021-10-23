@@ -1,5 +1,6 @@
 from os import name
 import spotipy
+from spotipy.exceptions import SpotifyException
 import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOauthError
 from dataclasses import dataclass, field
@@ -11,6 +12,9 @@ class SpotifyInitException(Exception):
     pass
 
 class GetDevicesException(Exception):
+    pass
+
+class SetDeviceException(Exception):
     pass
 
 @dataclass
@@ -72,6 +76,14 @@ class SpotifyClient(spotipy.Spotify):
             raise GetDevicesException('Could not get active devices from spotify client')
 
         return devices
+    
+    @_refresh_token_if_expired
+    def set_active_device(self, device_id: str):
+        try:
+            super().transfer_playback(device_id=device_id)
+        except SpotifyException as e:
+            raise SetDeviceException('Coiuld not activate given device')
+
     
     @_refresh_token_if_expired
     def ramp_up_volume(self, number_of_steps:int=10, pause:float=0.1):
