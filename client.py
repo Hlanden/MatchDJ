@@ -1,0 +1,153 @@
+from os import name
+import spotipy
+import spotipy.util as util
+from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOauthError
+from dataclasses import dataclass, field
+from typing import List
+import time
+from playlist import Playlist, Song
+
+class SpotifyInitException(Exception):
+    pass
+
+class GetDevicesException(Exception):
+    pass
+
+@dataclass
+class PlaybackDevice: 
+    name: str
+    type: str
+    id: str
+    is_active: bool
+    volume_percent: int
+    is_private_session: bool
+    is_restricted: bool
+
+    def __repr__(self) -> str:
+        return '{} ({})'.format(self.name, self.type)
+
+class SpotifyClient(spotipy.Spotify):
+    def __init__(self, username, **kwargs):
+        self.username = username
+        self.token: str = ''
+        self.playbackDevices: List[PlaybackDevice] = []
+        self.activeDevice: PlaybackDevice = None
+
+        try:
+            self.token = self.get_token(self.username)
+            super().__init__(auth=self.token, **kwargs)
+        except Exception as e:
+            raise SpotifyInitException('Could not initialize spotify client.')
+
+        self.playbackDevices = self.get_devices()
+    
+    def _refresh_token_if_expired(func):
+        def wrapper(self, *args, **kwargs):
+            try:
+                result = func(self, *args, **kwargs)
+            except SpotifyOauthError:
+                self.get_token(self.username)
+                result = func(self, *args, **kwargs)
+            return result
+        return wrapper
+
+    def get_token(self, username:str):
+        token = util.prompt_for_user_token(username,
+                                           scope=('user-modify-playback-state '
+                                                  'user-read-currently-playing '
+                                                  'user-read-playback-state '
+                                                  'user-read-playback-position'),
+                                           client_id='deaee968a7a64560a77b72ab06b7095b',
+                                           client_secret='ab6950b1df03424d81631fbb790e71be',
+                                           redirect_uri='http://localhost:8080/',
+                                           cache_path='tokens/.cache-{}'.format(username)
+                                           )
+        return token                                       
+
+    @_refresh_token_if_expired
+    def get_devices(self):
+        try:
+            devices = [PlaybackDevice(**dev) for dev in self.devices()['devices']]
+        except Exception as e:
+            raise GetDevicesException('Could not get active devices from spotify client')
+
+        return devices
+    
+    @_refresh_token_if_expired
+    def ramp_up_volume(self, number_of_steps:int=10, pause:float=0.1):
+        self.volume(0)
+        for i in range(number_of_steps):
+            self.volume(int(i*100/number_of_steps))
+            time.sleep(pause)
+        self.volume(100)
+    
+    @_refresh_token_if_expired
+    def ramp_down_volume(self, number_of_steps:int=10, pause:float=0.1):
+        for i in range(number_of_steps):
+            self.volume(100 - int(i*100/number_of_steps))
+            time.sleep(pause)
+        self.volume(0)
+
+    @_refresh_token_if_expired
+    def start_playback(self, **kwargs):
+        try:
+            super().start_playback(**kwargs)
+        except spotipy.SpotifyException as e:
+            if e.http_status == 403:
+                # Already playing
+                return
+            else:
+                raise e
+    
+    @_refresh_token_if_expired
+    def pause_playback(self, **kwargs):
+        try:
+            super().pause_playback(**kwargs)
+        except spotipy.SpotifyException as e:
+            if e.http_status == 403:
+                # Already paused
+                return
+            else:
+                raise e
+    
+    @_refresh_token_if_expired
+    def play_for_time_duration(self, time_duration=10, **kwargs):
+        self.start_playback(**kwargs)
+        self.ramp_up_volume()
+        time.sleep(time_duration)
+        self.ramp_down_volume()
+        self.volume(0)
+        self.pause_playback()
+
+    @_refresh_token_if_expired
+    def get_current_song(self):
+        playback_dict = self.current_playback()
+        try: 
+            name = playback_dict['item']['name']
+            uri = playback_dict['item']['uri']
+            timestamp = playback_dict['progress_ms']
+            return Song(uri=uri, timestamp=timestamp, name=name)
+        except Exception as e:
+            print('Failed to get current song: ', e)
+            return
+    
+    @_refresh_token_if_expired
+    def get_current_volume(self):
+        volume = self.current_playback()['device']['volume_percent']
+        return volume
+
+    @_refresh_token_if_expired
+    def prepear_song(self, song:Song):
+        self.volume(0)
+        self.start_playback(uris=[song.uri],
+                            position_ms=song.timestamp)
+        self.pause_playback()
+    
+
+if __name__=='__main__':
+    username = 'jorgen1998'
+    sp = SpotifyClient(username=username)
+    song = Song(uri='spotify:track:3Sxd2zTEoWwMPAVbBJGwAC', timestamp=164872)
+    print(sp.prepear_song(song))
+    #sp.play_for_time_duration()
+    #sp.pause_playback()
