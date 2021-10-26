@@ -78,6 +78,13 @@ class SpotifyClient(spotipy.Spotify):
         return devices
     
     @_refresh_token_if_expired
+    def get_active_device(self):
+        for dev in self.get_devices():
+            if dev.is_active:
+                return dev
+        return None
+    
+    @_refresh_token_if_expired
     def set_active_device(self, device_id: str):
         try:
             super().transfer_playback(device_id=device_id)
