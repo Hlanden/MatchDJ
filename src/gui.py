@@ -295,7 +295,9 @@ class Application:
     def login(self):
         if self.username_var.get():
             self.username = self.username_var.get()
-            if not "tokens/.cache-" +self.username in glob.glob(os.path.join(os.getcwd(), 'tokens/.*')):
+            tokens = [os.path.basename(x) for x in glob.glob(os.path.join(os.getcwd(), 'tokens/.*'))]
+            print('Tokens: ', tokens)
+            if not ".cache-" +self.username in tokens:
                 yesno= messagebox.askyesno("New user", f"User: {self.username} does not exist. Do you want to add a new user?")
                 if not yesno:
                     self.username = ''
