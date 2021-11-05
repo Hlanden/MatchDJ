@@ -1,5 +1,7 @@
 # MatchDJ
-Application for playing songs for handball matches using spotify. 
+**NOTE: To get acces to the app, you need to send me a request with your mail and full name, so I can give you acces to the application.**
+
+Application for playing songs for a handball match via spotify. 
 
 Under development. Bugs may occur. Executables are only available on Windows and Ubuntu.
 
