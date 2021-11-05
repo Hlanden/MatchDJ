@@ -8,8 +8,20 @@ pyinstaller -n MatchDJ --onefile src/main.py --windowed
 ```
 
 ## How to use it
+
+### Running from executable
 Download the [executable folder](https://github.com/Hlanden/MatchDJ/tree/master/Executables) for your OS. Unzip it an run it in from the unzipped folder. 
 
+### Running from terminal
+If you don't want to use the executable you can run it in the following way from the terminal (you need to have git and python installed): 
+```
+git clone https://github.com/Hlanden/MatchDJ.git
+cd MatchDJ
+pip install -r requirements.txt
+python3 src/main.py
+```
+
+### Login
 When you open the application, you need to log into your spotify and accept that the application can control your spotify. When you have logged in, this descision will be remembered the next time you use it. 
 
 ### Select device
