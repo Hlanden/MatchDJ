@@ -282,18 +282,3 @@ class Application:
                                            time_duration=15,
                                            number_of_steps=5,
                                            pause=0.2)
-    
-    
-
-
-   
-    
-
-def main(): 
-    root = tk.Tk()
-    app = Application(root)
-    root.after(10, app.show_login)
-    root.mainloop()
-
-if __name__ == '__main__':
-    main()
