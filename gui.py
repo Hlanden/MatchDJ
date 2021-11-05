@@ -23,6 +23,14 @@ class Application:
         self.playlist_path = ''
         self.playlist_status = 'unsaved'
         self.thread_queue = []
+        
+        
+        self.penalty_song = Song(uri='spotify:track:2bw4WgXyXP90hIex7ur58y',
+                                 timestamp=10000,
+                                 name='The Imperial Match (Darth Vaders Theme)')
+        self.expulsion_song = Song(uri='spotify:track:13XKaf7SFcvG4iXmFkNiWr',
+                                   timestamp=17000,
+                                   name='Du käre lille snickerbo')
 
         #self.promt_login()
 
@@ -31,7 +39,37 @@ class Application:
         self.show_application()
 
         #self.frame.grid(row=0, column=1, padx=0, pady=0, sticky='')    
-
+    
+    def _spotify_function_runner(func):
+        def wrapper(self, *args, **kwargs):
+            try:
+                if not self.username: 
+                    messagebox.showerror('Not logged in', 'Please log in with a spotify user')
+                    return
+                if not self.client:
+                    messagebox.showerror('No spotify connected', 'Please connect to a spotify application.')
+                    return
+                if not self.active_device:
+                    messagebox.showerror('No active device', 'Please open a spotify application, refresh devices and connect to a device.')
+                    return 
+                if not self.playlist.playlist:
+                    messagebox.showerror('No playlist selected', 'Please create or load a playlist.')
+                    return 
+                
+                if len(threading.enumerate()) > 1:
+                    messagebox.showerror('Spotify function already running', 'Spotify function allready running. Please wait.')
+                else:
+                    thread = threading.Thread(target=func, args=(self, *args), kwargs=kwargs)
+                    thread.start()
+                    return thread
+                
+            except SpotifyException as e:
+                self.get_token(self.username)
+                thread = threading.Thread(target=func, args=(self, *args), kwargs=kwargs)
+                thread.start()
+                return thread
+        return wrapper
+    
     def create_widgets(self):
         pass
 
@@ -49,8 +87,10 @@ class Application:
         self.device_header_label = tk.Label(self.frame, font=(("Arial", 16, 'bold underline')), text='Playback device')
         self.device_label = tk.Label(self.frame, font=(("Arial", 12)), text='Choose playback device:')
         self.device_var = tk.StringVar(self.master)
-        self.devices = self.client.get_devices() if self.client else ['']
-        self.active_device = self.client.get_active_device() if self.client is not None else ''
+        self.devices = self.client.get_devices() if self.client else [None]
+        if not self.devices: 
+            self.devices.append(None)
+        self.active_device = self.client.get_active_device() if self.client is not None else None
         self.device_var.set(str(self.active_device))
         self.device_option_menu = tk.OptionMenu(self.frame, self.device_var, *self.devices)
         self.device_refresh_button = tk.Button(self.frame, font=(("Arial", 12)), text='Refresh devices', command=self.update_devices)
@@ -66,14 +106,14 @@ class Application:
         self.save_playlist_button = tk.Button(self.frame, font=(("Arial", 12)), text='Save', command=self.save_playlist)
         self.save_as_playlist_button = tk.Button(self.frame, font=(("Arial", 12)), text='Save as...', command=self.save_playlist_as)
 
-        self.current_playlist_label = tk.Label(self.frame, font=(("Arial", 12, "italic")), text='Current playlist: {} ({})'.format(self.playlist_name, self.playlist_status))
+        self.current_playlist_label = tk.Label(self.frame, font=(("Arial", 12, "italic")), text='Current playlist: {} ({})'.format(self.playlist_name.split('.') [0], self.playlist_status))
 
         self.dj_header_label = tk.Label(self.frame, font=(("Arial", 16, 'bold underline')), text='DJ Controls:')
 
         self.dj_label = tk.Label(self.frame, font=(("Arial", 12)), text='DJ Controls:')
         self.goal_button = tk.Button(self.frame, font=(("Arial", 12)), text='MÅL!', command=lambda: self.goal())
-        self.penalty_button = tk.Button(self.frame, font=(("Arial", 12)), text='Straffe', command=None)
-        self.expulsion = tk.Button(self.frame, font=(("Arial", 12)), text='2 min', command=None)
+        self.penalty_button = tk.Button(self.frame, font=(("Arial", 12)), text='Straffe', command=lambda: self.penalty())
+        self.expulsion_button = tk.Button(self.frame, font=(("Arial", 12)), text='2 min', command=lambda: self.expulsion())
 
         self.login_label.grid(row=1, column=1, padx=0, pady=5, sticky='')
 
@@ -98,7 +138,7 @@ class Application:
         self.dj_label.grid(row=30, column=1, padx=0, pady=0, sticky='')
         self.penalty_button.grid(row=31, column=0, padx=0, pady=0, sticky='E')
         self.goal_button.grid(row=31, column=1, padx=0, pady=0, sticky='')
-        self.expulsion.grid(row=31, column=2, padx=0, pady=0, sticky='W')
+        self.expulsion_button.grid(row=31, column=2, padx=0, pady=0, sticky='W')
     
     def load_playlist(self):
         filename = filedialog.askopenfilename(filetypes=[('JSON Files', '*.json')])
@@ -110,7 +150,6 @@ class Application:
                 self.playlist_name = os.path.basename(filename)
                 self.playlist = playlist
                 self.playlist_status = 'saved'
-                self.client.prepear_song(song=self.playlist.get_current_song())
                 self.update_application()
         except Exception as e:
             messagebox.showerror('Load error', 'Could not load playlist: ' + str(e))
@@ -152,13 +191,11 @@ class Application:
         try: 
             device_name = self.device_var.get()
             for dev in self.devices:
-                if dev.name == device_name.split(' (')[0]:
+                if device_name != 'None' and dev is not None and dev.name == device_name.split(' (')[0]:
                     self.client.set_active_device(dev.id)
                     return
         except Exception as e:
-            messagebox.showerror('Device error', 'Could not set device: ' + str(e))
-        
-        messagebox.showerror('Device error', 'Could not set device: ' + str(device_name))
+            messagebox.showerror('Device error', 'Could not set device: ' + str(device_name))
 
     def update_devices(self, *args):
         try: 
@@ -204,7 +241,9 @@ class Application:
                 self.show_application()
             except SpotifyException as e:
                 messagebox.showerror('Spotify errror', 'Something went wrong when loggin into spotify: ' + str(e.msg))
+                self.username = ''
             except Exception as e:
+                self.username = ''
                 raise e
                 messagebox.showerror('Error', 'Something went wrong when loggin into spotify: ' + str(e))
         else:
@@ -220,27 +259,34 @@ class Application:
     def quit(self):
         self.master.destroy()
 
-
+    @_spotify_function_runner
     def goal(self):
-        self.client.play_song(self.playlist.get_current_song())
-        self.client.ramp_up_volume()
-        time.sleep(10)
-        self.client.ramp_down_volume()
-        self.client.pause_playback()
+        self.client.volume(0)
         self.playlist.next_song()
+        self.client.play_song(self.playlist.get_current_song())
+        self.client.ramp_up_volume(number_of_steps=5, pause=0.2)
+        time.sleep(10)
+        self.client.ramp_down_volume(number_of_steps=5, pause=0.2)
+        self.client.pause_playback()
+        
+    @_spotify_function_runner
+    def penalty(self):
+        self.client.play_for_time_duration(self.penalty_song, 
+                                           time_duration=15,
+                                           number_of_steps=5,
+                                           pause=0.2)
+    
+    @_spotify_function_runner
+    def expulsion(self):
+        self.client.play_for_time_duration(self.expulsion_song, 
+                                           time_duration=15,
+                                           number_of_steps=5,
+                                           pause=0.2)
+    
+    
 
 
-    def function_runner(func):
-        def wrapper(self, *args, **kwargs):
-            try:
-                thread = threading.Thread(target=func, args=args, kwargs=kwargs)
-                thread.start()
-                return thread
-            except SpotifyException as e:
-                self.get_token(self.username)
-                result = func(self, *args, **kwargs)
-            return result
-        return wrapper
+   
     
 
 def main(): 

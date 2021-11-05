@@ -134,12 +134,11 @@ class SpotifyClient(spotipy.Spotify):
                 raise e
     
     @_refresh_token_if_expired
-    def play_for_time_duration(self, time_duration=10, **kwargs):
-        self.start_playback(**kwargs)
-        self.ramp_up_volume()
+    def play_for_time_duration(self, song:Song, time_duration:float=10, number_of_steps:int=10, pause:float=0.1, **kwargs):
+        self.play_song(song)
+        self.ramp_up_volume(number_of_steps=number_of_steps, pause=pause)
         time.sleep(time_duration)
-        self.ramp_down_volume()
-        self.volume(0)
+        self.ramp_down_volume(number_of_steps=number_of_steps, pause=pause)
         self.pause_playback()
 
     @_refresh_token_if_expired
@@ -170,7 +169,6 @@ class SpotifyClient(spotipy.Spotify):
     def play_song(self, song:Song):
         self.start_playback(uris=[song.uri],
                             position_ms=song.timestamp)
-    
 
 if __name__=='__main__':
     username = 'jorgen1998'
