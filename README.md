@@ -17,7 +17,7 @@ Download the [executable folder](https://github.com/Hlanden/MatchDJ/tree/master/
 * [Ubuntu download](https://github.com/Hlanden/MatchDJ/raw/master/Executables/MatchDJ_Ubuntu.zip)
 
 ### Running from terminal
-If you don't want to use the executable you can run it in the following way from the terminal (you need to have git and python installed): 
+If you don't want to use the executable you can run it in the following way from the terminal (you need to have **git** and **python3** installed): 
 ```
 git clone https://github.com/Hlanden/MatchDJ.git
 cd MatchDJ
