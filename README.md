@@ -3,8 +3,11 @@ Under development. Bugs may occur. Executables are only available on Windows and
 
 **Please feel free to contribute to the project if you find any bugs :)**
 
-Executables can be created on Mac ruuning these commands in a terminal located in parent directory of this repo: 
+Executables can be created for Mac ruuning these commands in a terminal (you need to have **git** and **python3** installed): 
 ```
+git clone https://github.com/Hlanden/MatchDJ.git
+cd MatchDJ
+pip install -r requirements.txt
 pip install pyinstaller
 pyinstaller -n MatchDJ --onefile src/main.py --windowed
 ```
