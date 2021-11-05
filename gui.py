@@ -34,7 +34,7 @@ class Application:
 
         #self.promt_login()
 
-        self.frame = tk.Frame(self.master, width=100, height=100)
+        self.frame = tk.Frame(self.master, width=100, height=100, bg='#e1f5fe')
         self.frame.pack()
         self.show_application()
 
@@ -82,38 +82,103 @@ class Application:
         self.show_application()
 
     def show_application(self):
-        self.login_label = tk.Label(self.frame, font=(("Arial", 12, 'italic')), text='Logged in as: {}'.format(self.username))
+        self.login_label = tk.Label(self.frame, 
+                                    font=(("Arial", 12, 'italic')), 
+                                    text='Logged in as: {}'.format(self.username), 
+                                    bg='#e1f5fe')
         
-        self.device_header_label = tk.Label(self.frame, font=(("Arial", 16, 'bold underline')), text='Playback device')
-        self.device_label = tk.Label(self.frame, font=(("Arial", 12)), text='Choose playback device:')
+        self.device_header_label = tk.Label(self.frame, 
+                                            font=(("Arial", 16, 'bold underline')), 
+                                            text='Playback device', 
+                                            bg='#e1f5fe')
+        self.device_label = tk.Label(self.frame, 
+                                     font=(("Arial", 12)), 
+                                     text='Choose playback device:', 
+                                     bg='#e1f5fe')
+        
         self.device_var = tk.StringVar(self.master)
         self.devices = self.client.get_devices() if self.client else [None]
         if not self.devices: 
             self.devices.append(None)
         self.active_device = self.client.get_active_device() if self.client is not None else None
         self.device_var.set(str(self.active_device))
+        
         self.device_option_menu = tk.OptionMenu(self.frame, self.device_var, *self.devices)
-        self.device_refresh_button = tk.Button(self.frame, font=(("Arial", 12)), text='Refresh devices', command=self.update_devices)
+        self.device_option_menu.configure(bg='#bbdefb')
+        self.device_refresh_button = tk.Button(self.frame, 
+                                               font=(("Arial", 12)), 
+                                               text='Refresh devices', 
+                                               command=self.update_devices,
+                                               bg='#bbdefb')
         self.device_var.trace('w', self.change_device)
 
-        self.playlist_header_label = tk.Label(self.frame, font=(("Arial", 16, 'bold underline')), text='Playlist:')
-        self.load_playlist_label = tk.Label(self.frame, font=(("Arial", 12)), text='Load playlist:')
-        self.browse_playlist_button = tk.Button(self.frame, font=(("Arial", 12)), text='Browse...', command=self.load_playlist)
+        self.playlist_header_label = tk.Label(self.frame, 
+                                              font=(("Arial", 16, 'bold underline')), 
+                                              text='Playlist:', 
+                                              bg='#e1f5fe')
+        self.load_playlist_label = tk.Label(self.frame, 
+                                            font=(("Arial", 12)), 
+                                            text='Load playlist:', 
+                                            bg='#e1f5fe')
+        self.browse_playlist_button = tk.Button(self.frame, 
+                                                font=(("Arial", 12)), 
+                                                text='Browse...', 
+                                                command=self.load_playlist,
+                                                bg='#bbdefb')
 
-        self.add_playlist_label = tk.Label(self.frame, font=(("Arial", 12)), text='Add currently playing song to playlist:')
-        self.add_playlist_button = tk.Button(self.frame, font=(("Arial", 12)), text='Add', command=self.add_song_to_playlist)
-        self.save_playlist_label = tk.Label(self.frame, font=(("Arial", 12)), text='Save changes made to playlist:')
-        self.save_playlist_button = tk.Button(self.frame, font=(("Arial", 12)), text='Save', command=self.save_playlist)
-        self.save_as_playlist_button = tk.Button(self.frame, font=(("Arial", 12)), text='Save as...', command=self.save_playlist_as)
+        self.add_playlist_label = tk.Label(self.frame, 
+                                           font=(("Arial", 12)), 
+                                           text='Add currently playing song to playlist:',
+                                           bg='#e1f5fe')
+        self.add_playlist_button = tk.Button(self.frame, 
+                                             font=(("Arial", 12)), 
+                                             text='Add', 
+                                             command=self.add_song_to_playlist,
+                                             bg='#bbdefb')
+        self.save_playlist_label = tk.Label(self.frame, 
+                                            font=(("Arial", 12)), 
+                                            text='Save changes made to playlist:',
+                                            bg='#e1f5fe')
+        self.save_playlist_button = tk.Button(self.frame, 
+                                              font=(("Arial", 12)), 
+                                              text='Save', 
+                                              command=self.save_playlist,
+                                              bg='#bbdefb')
+        self.save_as_playlist_button = tk.Button(self.frame, 
+                                                 font=(("Arial", 12)), 
+                                                 text='Save as...', 
+                                                 command=self.save_playlist_as,
+                                                 bg='#bbdefb')
 
-        self.current_playlist_label = tk.Label(self.frame, font=(("Arial", 12, "italic")), text='Current playlist: {} ({})'.format(self.playlist_name.split('.') [0], self.playlist_status))
+        self.current_playlist_label = tk.Label(self.frame, 
+                                               font=(("Arial", 12, "italic")), 
+                                               text='Current playlist: {} ({})'.format(self.playlist_name.split('.') [0], self.playlist_status),
+                                               bg='#e1f5fe')
 
-        self.dj_header_label = tk.Label(self.frame, font=(("Arial", 16, 'bold underline')), text='DJ Controls:')
+        self.dj_header_label = tk.Label(self.frame, 
+                                        font=(("Arial", 16, 'bold underline')), 
+                                        text='DJ Controls:',
+                                        bg='#e1f5fe')
 
-        self.dj_label = tk.Label(self.frame, font=(("Arial", 12)), text='DJ Controls:')
-        self.goal_button = tk.Button(self.frame, font=(("Arial", 12)), text='MÅL!', command=lambda: self.goal())
-        self.penalty_button = tk.Button(self.frame, font=(("Arial", 12)), text='Straffe', command=lambda: self.penalty())
-        self.expulsion_button = tk.Button(self.frame, font=(("Arial", 12)), text='2 min', command=lambda: self.expulsion())
+        self.dj_label = tk.Label(self.frame, 
+                                 font=(("Arial", 12)), 
+                                 text='DJ Controls:',
+                                 bg='#e1f5fe')
+        self.goal_button = tk.Button(self.frame, 
+                                     font=(("Arial", 12)), 
+                                     text='MÅL!', 
+                                     command=lambda: self.goal(),
+                                     bg='green')
+        self.penalty_button = tk.Button(self.frame, 
+                                        font=(("Arial", 12)), 
+                                        text='Straffe', 
+                                        command=lambda: self.penalty(),
+                                        bg='yellow')
+        self.expulsion_button = tk.Button(self.frame, 
+                                          font=(("Arial", 12)), 
+                                          text='2 min', 
+                                          command=lambda: self.expulsion(),
+                                          bg='red')
 
         self.login_label.grid(row=1, column=1, padx=0, pady=5, sticky='')
 
