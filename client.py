@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import List
 import time
 from playlist import Playlist, Song
+from pathlib import Path
 
 class SpotifyInitException(Exception):
     pass
@@ -35,7 +36,9 @@ class SpotifyClient(spotipy.Spotify):
         self.username = username
         self.token: str = ''
         self.playbackDevices: List[PlaybackDevice] = []
-        self.activeDevice: PlaybackDevice = None
+        self.active_device: PlaybackDevice = None
+        Path("tokens/").mkdir(parents=True, exist_ok=True)
+
 
         try:
             self.token = self.get_token(self.username)
@@ -81,6 +84,7 @@ class SpotifyClient(spotipy.Spotify):
     def get_active_device(self):
         for dev in self.get_devices():
             if dev.is_active:
+                self.active_device = dev
                 return dev
         return None
     
@@ -161,6 +165,11 @@ class SpotifyClient(spotipy.Spotify):
         self.start_playback(uris=[song.uri],
                             position_ms=song.timestamp)
         self.pause_playback()
+    
+    @_refresh_token_if_expired
+    def play_song(self, song:Song):
+        self.start_playback(uris=[song.uri],
+                            position_ms=song.timestamp)
     
 
 if __name__=='__main__':

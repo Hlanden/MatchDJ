@@ -26,11 +26,13 @@ class Playlist:
     def shuffle_playlist(self):
         random.shuffle(self.playlist)
     
-    def get_next_song(self):
+    def get_current_song(self):
+        return self.playlist[self.song_index]
+    
+    def next_song(self):
         self.song_index += 1
         if self.song_index >= len(self.playlist):
             self.song_index = 0
-        return self.playlist[self.song_index]
 
     def save_playlist(self, path:str):
         with open(path, 'w+') as file:
@@ -41,6 +43,7 @@ class Playlist:
         with open(path, 'r') as file:
             data = [Song(**song) for song in json.load(file)]
             self.playlist = data
+            self.shuffle_playlist()
     
     def __repr__(self) -> str:
         s = ''

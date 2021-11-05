@@ -8,7 +8,7 @@ from tkinter import StringVar
 import time 
 import os
 from tkinter import messagebox
-
+import threading
 
 class Application:
     def __init__(self, master):
@@ -16,10 +16,12 @@ class Application:
         self.username = ''
         self.client = None
         self.active_device = None
+        self.devices = []
         self.playlist = Playlist()
         self.playlist_name = 'New Playlist'
         self.playlist_path = ''
         self.playlist_status = 'unsaved'
+        self.thread_queue = []
 
         #self.promt_login()
 
@@ -68,7 +70,7 @@ class Application:
         self.dj_header_label = tk.Label(self.frame, font=(("Arial", 16, 'bold underline')), text='DJ Controls:')
 
         self.dj_label = tk.Label(self.frame, font=(("Arial", 12)), text='DJ Controls:')
-        self.goal_button = tk.Button(self.frame, font=(("Arial", 12)), text='MÅL!', command=None)
+        self.goal_button = tk.Button(self.frame, font=(("Arial", 12)), text='MÅL!', command=lambda: self.goal())
         self.penalty_button = tk.Button(self.frame, font=(("Arial", 12)), text='Straffe', command=None)
         self.expulsion = tk.Button(self.frame, font=(("Arial", 12)), text='2 min', command=None)
 
@@ -101,13 +103,13 @@ class Application:
         filename = filedialog.askopenfilename(filetypes=[('JSON Files', '*.json')])
         try:
             if filename:
-                print(filename)
                 playlist = Playlist()
                 playlist.load_playlist(filename)
                 self.playlist_path = filename
                 self.playlist_name = os.path.basename(filename)
                 self.playlist = playlist
                 self.playlist_status = 'saved'
+                self.client.prepear_song(song=self.playlist.get_current_song())
                 self.update_application()
         except Exception as e:
             messagebox.showerror('Load error', 'Could not load playlist: ' + str(e))
@@ -128,8 +130,8 @@ class Application:
         try:
             if filename:
                 self.playlist_path = filename
-                self.playlist.save_playlist(self.playlist_path)
                 self.playlist_name = os.path.basename(self.playlist_path)
+                self.playlist.save_playlist(self.playlist_path + '.json')
                 self.playlist_status = 'saved'
                 self.update_application()
         except Exception as e:
@@ -148,11 +150,10 @@ class Application:
     def change_device(self, *args):
         try: 
             device_name = self.device_var.get()
-            if device_name:
-                for dev in self.devices:
-                    if dev.name == device_name.split(' (')[0]:
-                        self.client.set_active_device(dev.id)
-                        return
+            for dev in self.devices:
+                if dev.name == device_name.split(' (')[0]:
+                    self.client.set_active_device(dev.id)
+                    return
         except Exception as e:
             messagebox.showerror('Device error', 'Could not set device: ' + str(e))
         
@@ -167,7 +168,7 @@ class Application:
             #self.device_option_menu = tk.OptionMenu(self.frame, self.device_var, *self.devices)
             self.device_option_menu.children['menu'].delete(0, 'end')
             for value in self.devices:
-                self.device_option_menu.children['menu'].add_command(label=value, command=lambda v=value: self.choice.set(v))
+                self.device_option_menu.children['menu'].add_command(label=value, command=lambda v=value: self.device_var.set(v))
         except Exception as e:
             messagebox.showerror('Device error', 'Could not set device: ' + str(e))
 
@@ -214,8 +215,26 @@ class Application:
         self.master.destroy()
 
 
+    def goal(self):
+        self.client.play_song(self.playlist.get_current_song())
+        self.client.ramp_up_volume()
+        time.sleep(10)
+        self.client.ramp_down_volume()
+        self.client.pause_playback()
+        self.playlist.next_song()
 
 
+    def function_runner(func):
+        def wrapper(self, *args, **kwargs):
+            try:
+                thread = threading.Thread(target=func, args=args, kwargs=kwargs)
+                thread.start()
+                return thread
+            except SpotifyException as e:
+                self.get_token(self.username)
+                result = func(self, *args, **kwargs)
+            return result
+        return wrapper
     
 
 def main(): 
