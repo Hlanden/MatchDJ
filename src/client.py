@@ -76,7 +76,7 @@ class SpotifyClient(spotipy.Spotify):
         try:
             devices = [PlaybackDevice(**dev) for dev in self.devices()['devices']]
         except Exception as e:
-            raise GetDevicesException('Could not get active devices from spotify client: ' + str(e))
+            raise GetDevicesException('Could not get active devices from spotify client: \n' + str(e))
 
         return devices
     
