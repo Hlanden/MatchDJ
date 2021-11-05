@@ -12,6 +12,9 @@ Download the [executable folder](https://github.com/Hlanden/MatchDJ/tree/master/
 
 When you open the application, you need to log into your spotify and accept that the application can control your spotify. When you have logged in, this descision will be remembered the next time you use it. 
 
+### Select device
+Log into spotify on the device you want to play from. If it does not appear in the list, play a song on the device and press "Refresh devices" and try again. 
+
 ### Creating loading playlists: 
 You need to create playlists to use the application. Each time you press "Goal" a song from the playlist will be played for 10 seconds, starting the song at a given offset (so it starts at thedrop for instance). This is done in the following procedure:
 
