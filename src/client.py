@@ -44,7 +44,7 @@ class SpotifyClient(spotipy.Spotify):
             self.token = self.get_token(self.username)
             super().__init__(auth=self.token, **kwargs)
         except Exception as e:
-            raise SpotifyInitException('Could not initialize spotify client.')
+            raise SpotifyInitException('Could not initialize spotify client: ' + str(e))
 
         self.playbackDevices = self.get_devices()
     
@@ -93,7 +93,7 @@ class SpotifyClient(spotipy.Spotify):
         try:
             super().transfer_playback(device_id=device_id)
         except SpotifyException as e:
-            raise SetDeviceException('Coiuld not activate given device')
+            raise SetDeviceException('Coiuld not activate given device: ' + str(e))
 
     
     @_refresh_token_if_expired

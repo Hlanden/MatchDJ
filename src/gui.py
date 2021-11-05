@@ -260,7 +260,7 @@ class Application:
                     self.client.set_active_device(dev.id)
                     return
         except Exception as e:
-            messagebox.showerror('Device error', 'Could not set device: ' + str(device_name))
+            messagebox.showerror('Device error', 'Could not set device: ' + str(device_name) + '\nError: ' + str(e))
 
     def update_devices(self, *args):
         try: 
