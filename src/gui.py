@@ -295,7 +295,7 @@ class Application:
     def login(self):
         if self.username_var.get():
             self.username = self.username_var.get()
-            if not "tokens/.cache-" +self.username in glob.glob('tokens/.*'):
+            if not "tokens/.cache-" +self.username in glob.glob(os.path.join(os.getcwd(), 'tokens/.*')):
                 yesno= messagebox.askyesno("New user", f"User: {self.username} does not exist. Do you want to add a new user?")
                 if not yesno:
                     self.username = ''
@@ -309,7 +309,6 @@ class Application:
                 self.username = ''
             except Exception as e:
                 self.username = ''
-                raise e
                 messagebox.showerror('Error', 'Something went wrong when loggin into spotify: ' + str(e))
         else:
             messagebox.showerror('Error', 'Enter a valid username')
