@@ -1,5 +1,7 @@
 # MatchDJ
-Under development. Bugs may occur. Executables are only available on Windows and Ubuntu. 
+Under development. Bugs may occur. Executables are only available on Windows and Ubuntu.
+
+**Please feel free to contribute to the project if you find any bugs :)**
 
 Executables can be created on Mac ruuning these commands in a terminal located in parent directory of this repo: 
 ```
@@ -10,7 +12,9 @@ pyinstaller -n MatchDJ --onefile src/main.py --windowed
 ## How to use it
 
 ### Running from executable
-Download the [executable folder](https://github.com/Hlanden/MatchDJ/tree/master/Executables) for your OS. Unzip it an run it in from the unzipped folder. 
+Download the [executable folder](https://github.com/Hlanden/MatchDJ/tree/master/Executables) for your OS. Unzip it an run it in from the unzipped folder.
+* [Windows download](https://github.com/Hlanden/MatchDJ/raw/master/Executables/MatchDJ_Windows.zip)
+* [Ubuntu download](https://github.com/Hlanden/MatchDJ/raw/master/Executables/MatchDJ_Ubuntu.zip)
 
 ### Running from terminal
 If you don't want to use the executable you can run it in the following way from the terminal (you need to have git and python installed): 
