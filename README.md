@@ -18,7 +18,7 @@ pyinstaller -n MatchDJ --onefile src/main.py --windowed
 
 ### Running from executable
 Download the [executable folder](https://github.com/Hlanden/MatchDJ/tree/master/Executables) for your OS. Unzip it an run it in from the unzipped folder.
-* [Windows download](https://github.com/Hlanden/MatchDJ/blob/master/Executables/MatchDJ_Windows.zip)
+* [Windows download](https://github.com/Hlanden/MatchDJ/raw/master/Executables/MatchDJ_Windows.zip)
 * [Ubuntu download](https://github.com/Hlanden/MatchDJ/raw/master/Executables/MatchDJ_Ubuntu.zip)
 
 ### Running from terminal
