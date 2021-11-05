@@ -9,6 +9,7 @@ import time
 import os
 from tkinter import messagebox
 import threading
+import glob
 
 class Application:
     def __init__(self, master):
@@ -192,6 +193,11 @@ class Application:
     def login(self):
         if self.username_var.get():
             self.username = self.username_var.get()
+            if not "tokens/.cache-" +self.username in glob.glob('tokens/.*'):
+                yesno= messagebox.askyesno("New user", f"User: {self.username} does not exist. Do you want to add a new user?")
+                if not yesno:
+                    self.username = ''
+                    return 
             try:
                 self.client = SpotifyClient(username=self.username)
                 self.destroy_login()
