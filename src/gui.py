@@ -338,13 +338,13 @@ class Application:
     @_spotify_function_runner
     def penalty(self):
         self.client.play_for_time_duration(self.penalty_song, 
-                                           time_duration=15,
+                                           time_duration=8,
                                            number_of_steps=5,
                                            pause=0.2)
     
     @_spotify_function_runner
     def expulsion(self):
         self.client.play_for_time_duration(self.expulsion_song, 
-                                           time_duration=15,
+                                           time_duration=10,
                                            number_of_steps=5,
                                            pause=0.2)
