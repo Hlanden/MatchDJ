@@ -185,6 +185,12 @@ class Application:
                                           text='2 min', 
                                           command=lambda: self.expulsion(),
                                           bg='red')
+        
+        self.stop_button = tk.Button(self.frame, 
+                                          font=(("Arial", 12)), 
+                                          text='STOP', 
+                                          command=lambda: self.stop(),
+                                          bg='red')
 
         self.login_label.grid(row=1, column=1, padx=0, pady=5, sticky='')
 
@@ -210,6 +216,8 @@ class Application:
         self.penalty_button.grid(row=31, column=0, padx=0, pady=0, sticky='E')
         self.goal_button.grid(row=31, column=1, padx=0, pady=0, sticky='')
         self.expulsion_button.grid(row=31, column=2, padx=0, pady=0, sticky='W')
+        
+        self.stop_button.grid(row=32, column=1, padx=0, pady=10)
     
     def load_playlist(self):
         filename = filedialog.askopenfilename(filetypes=[('JSON Files', '*.json')])
@@ -356,3 +364,8 @@ class Application:
                                            time_duration=10,
                                            number_of_steps=5,
                                            pause=0.2)
+    
+    @_spotify_function_runner
+    def stop(self):
+        self.client.ramp_down_volume(number_of_steps=5, pause=0.2, goal_vol=0)
+        self.client.pause_playback()
