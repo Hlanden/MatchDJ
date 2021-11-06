@@ -105,11 +105,12 @@ class SpotifyClient(spotipy.Spotify):
         self.volume(100)
     
     @_refresh_token_if_expired
-    def ramp_down_volume(self, number_of_steps:int=10, pause:float=0.1):
+    def ramp_down_volume(self, number_of_steps:int=10, pause:float=0.1, goal_vol=0):
+        current_vol = self.get_current_volume()
         for i in range(number_of_steps):
-            self.volume(100 - int(i*100/number_of_steps))
+            self.volume(current_vol - int(i*(current_vol-goal_vol)/number_of_steps))
             time.sleep(pause)
-        self.volume(0)
+        self.volume(goal_vol)
 
     @_refresh_token_if_expired
     def start_playback(self, **kwargs):

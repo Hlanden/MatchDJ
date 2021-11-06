@@ -10,6 +10,7 @@ import os
 from tkinter import messagebox
 import threading
 import glob
+from terminating_thread import ExceptionThread
 
 class Application:
     def __init__(self, master):
@@ -56,10 +57,15 @@ class Application:
                     messagebox.showerror('No playlist selected', 'Please create or load a playlist.')
                     return 
                 
-                if len(threading.enumerate()) > 1:
-                    messagebox.showerror('Spotify function already running', 'Spotify function allready running. Please wait.')
+                
+                for thread in threading.enumerate():
+                    if type(thread) is ExceptionThread:
+                        thread.raise_exception()
+                        
+                # if len(threading.enumerate()) > 1:
+                #     messagebox.showerror('Spotify function already running', 'Spotify function allready running. Please wait.')
                 else:
-                    thread = threading.Thread(target=func, args=(self, *args), kwargs=kwargs)
+                    thread = ExceptionThread(target=func, args=(self, *args), kwargs=kwargs)
                     thread.start()
                     return thread
                 
@@ -331,8 +337,10 @@ class Application:
         self.playlist.next_song()
         self.client.play_song(self.playlist.get_current_song())
         self.client.ramp_up_volume(number_of_steps=5, pause=0.2)
-        time.sleep(10)
-        self.client.ramp_down_volume(number_of_steps=5, pause=0.2)
+        time.sleep(7)
+        self.client.ramp_down_volume(number_of_steps=5, pause=0.2, goal_vol=50)
+        time.sleep(3)
+        self.client.ramp_down_volume(number_of_steps=5, pause=0.2, goal_vol=0)
         self.client.pause_playback()
         
     @_spotify_function_runner
