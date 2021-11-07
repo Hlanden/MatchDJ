@@ -38,7 +38,7 @@ When you open the application, you need to log into your spotify and accept that
 ### Select device
 Log into spotify on the device you want to play from. If it does not appear in the list, play a song on the device and press "Refresh devices" and try again. 
 
-### Creating loading playlists: 
+### Creating or loading playlists: 
 You need to create playlists to use the application. Each time you press "Goal" a song from the playlist will be played for 10 seconds, starting the song at a given offset (so it starts at thedrop for instance). This is done in the following procedure:
 
 1. Play a song on spotify 
@@ -46,7 +46,7 @@ You need to create playlists to use the application. Each time you press "Goal" 
 3. Pause the song 
 4. Press the "Add" button
 
-This will add the song to the current playlist. You will then see that the current playlist is unsaved. Press "Save As" to save the playlist.
+This will add the song to the current playlist. Pressing "MÅL!" will play the song from the time you added it for ten sencods. It will play it on 100 % volume for 7 seconds, and then turn the volume down to 50 % the last three seconds so a speaker can announce the scorer etc. You will then see that the current playlist is unsaved. Press "Save As"/"Save" to save the playlist.
 
 ### Loading playlist
 You can load premade playlists pressing the "Browse..." button. 
