@@ -10,7 +10,8 @@ import os
 from tkinter import messagebox
 import threading
 import glob
-from terminating_thread import ExceptionThread
+from terminating_thread import ExceptionThread, ThreadWithTrace
+import multiprocessing
 
 class Application:
     def __init__(self, master):
@@ -38,6 +39,10 @@ class Application:
         self.frame = tk.Frame(self.master, width=100, height=100, bg='#e1f5fe')
         self.frame.pack()
         self.show_application()
+        
+        import psutil
+
+        self.current_process = psutil.Process()
 
         #self.frame.grid(row=0, column=1, padx=0, pady=0, sticky='')    
     
@@ -61,12 +66,21 @@ class Application:
                 for thread in threading.enumerate():
                     if type(thread) is ExceptionThread:
                         thread.raise_exception()
-                        
+                    if type(thread) is ThreadWithTrace:
+                        thread.kill()
+                
+                # children = self.current_process.children(recursive=True)
+                # for child in children:
+                #     print('Child pid is {}'.format(child.pid))
+                #     child.terminate()
+                #     print('Childs {}'.format(self.current_process.children(recursive=True)))
                 # if len(threading.enumerate()) > 1:
                 #     messagebox.showerror('Spotify function already running', 'Spotify function allready running. Please wait.')
                 else:
-                    thread = ExceptionThread(target=func, args=(self, *args), kwargs=kwargs)
+                    thread = ThreadWithTrace(target=func, args=(self, *args), kwargs=kwargs, daemon=True)
                     thread.start()
+                    # process = multiprocessing.Process(target=func, args=(self, *args), kwargs=kwargs, daemon=True)
+                    # process.start()
                     return thread
                 
             except SpotifyException as e:
