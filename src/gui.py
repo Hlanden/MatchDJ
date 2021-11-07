@@ -250,7 +250,8 @@ class Application:
             if filename:
                 self.playlist_path = filename
                 self.playlist_name = os.path.basename(self.playlist_path)
-                self.playlist.save_playlist(self.playlist_path + '.json')
+                self.playlist_name = self.playlist_name if self.playlist_name.__contains__("json") else self.playlist_name + '.json'
+                self.playlist.save_playlist(self.playlist_path)
                 self.playlist_status = 'saved'
                 self.update_application()
         except Exception as e:
@@ -371,3 +372,9 @@ class Application:
     def stop(self):
         self.client.ramp_down_volume(number_of_steps=5, pause=0.2, goal_vol=0)
         self.client.pause_playback()
+        
+        
+if __name__ == '__main__':
+    playlist = Playlist()
+    playlist.load_playlist("example_playlist.json.json")
+    print(len(playlist.playlist))
