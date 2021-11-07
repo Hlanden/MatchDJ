@@ -49,7 +49,9 @@ You need to create playlists to use the application. Each time you press "Goal" 
 This will add the song to the current playlist. You will then see that the current playlist is unsaved. Press "Save As" to save the playlist.
 
 ### Loading playlist
-YOu can load premade playlists pressing the "Browse..." button. 
+You can load premade playlists pressing the "Browse..." button. 
+
+**An example playlist is added in the download folder**, and you can edit this as you like (or make your own).
 
 ### Using the app
 * Goal: Whis will play a song for 10 seconds ramping the sound up in the start and down in the end
