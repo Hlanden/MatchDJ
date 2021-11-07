@@ -46,7 +46,7 @@ You need to create playlists to use the application. Each time you press "Goal" 
 3. Pause the song 
 4. Press the "Add" button
 
-This will add the song to the current playlist. Pressing "MÅL!" will play the song from the time you added it for ten sencods. It will play it on 100 % volume for 7 seconds, and then turn the volume down to 50 % the last three seconds so a speaker can announce the scorer etc. You will then see that the current playlist is unsaved. Press "Save As"/"Save" to save the playlist.
+This will add the song to the current playlist. You will then see that the current playlist is unsaved. Press "Save As"/"Save" to save the playlist.
 
 ### Loading playlist
 You can load premade playlists pressing the "Browse..." button. 
@@ -54,10 +54,8 @@ You can load premade playlists pressing the "Browse..." button.
 **An example playlist is added in the download folder**, and you can edit this as you like (or make your own).
 
 ### Using the app
-* Goal: Whis will play a song for 10 seconds ramping the sound up in the start and down in the end
+* Goal: Whis will play a song for 10 seconds ramping the sound up in the start and down in the end. It will play it on 100 % volume for 7 seconds, and then turn the volume down to 50 % the last three seconds so a speaker can announce the scorer etc.
 * 2 min: This will play "Du käre lille snickerbo" for 15 seconds
 * Straffe: This will play "Darth Vaders theme" for 15 seconds
-
-If you have already pressed one of these buttons, you will have to wait until the commad is done before you can press a new button. 
 
 Enjoy :) 
