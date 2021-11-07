@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 
 from spotipy.exceptions import SpotifyException
-from client import SpotifyClient
+from client import SpotifyClient, SpotifyInitException
 from playlist import Playlist, Song
 from tkinter import StringVar
 import time 
@@ -320,8 +320,10 @@ class Application:
                 self.client = SpotifyClient(username=self.username)
                 self.destroy_login()
                 self.show_application()
+            except SpotifyInitException as e: 
+                messagebox.showerror('Spotify error', 'Could not log into Spotify. Please open spotify and play/pause a song, and then reopen the DJ application and try again.')
             except SpotifyException as e:
-                messagebox.showerror('Spotify errror', 'Something went wrong when loggin into spotify: ' + str(e.msg))
+                messagebox.showerror('Spotify error', 'Something went wrong when loggin into spotify: ' + str(e.msg))
                 self.username = ''
             except Exception as e:
                 self.username = ''
